@@ -17,7 +17,6 @@ export default function Steps() {
         Step {currentStep + 1} of {steps.length}
       </p>
 
-      {/* Progress bar */}
       <div className="progress-bar">
         {steps.map((_, i) => (
           <div
