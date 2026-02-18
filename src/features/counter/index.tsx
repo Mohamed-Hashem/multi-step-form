@@ -7,26 +7,37 @@ export default function Counter() {
   const dispatch = useAppDispatch();
   const [amount, setAmount] = useState(0);
 
-  const resetCounter = () => {
-    dispatch(reset());
-    setAmount(0);
-  };
-
   return (
-    <div style={{ padding: 20 }}>
-      <h2>Counter: {count}</h2>
+    <div className="app-container">
+      <h1>Redux Toolkit Counter</h1>
 
-      <button onClick={() => dispatch(increment())}>+</button>
-      <button onClick={() => dispatch(decrement())}>-</button>
-      <button onClick={resetCounter}>Reset</button>
+      <div className="counter-value">{count}</div>
 
-      <div style={{ marginTop: 10 }}>
+      <div className="buttons">
+        <button onClick={() => dispatch(increment())}>+</button>
+        <button onClick={() => dispatch(decrement())}>-</button>
+        <button
+          onClick={() => {
+            dispatch(reset());
+            setAmount(0);
+          }}
+        >
+          Reset
+        </button>
+      </div>
+
+      <div className="input-group">
         <input
           type="number"
           value={amount}
           onChange={(e) => setAmount(Number(e.target.value))}
         />
-        <button onClick={() => dispatch(incrementByAmount(amount))}>
+        <button
+          className="primary"
+          onClick={() => {
+            dispatch(incrementByAmount(amount));
+          }}
+        >
           Add Amount
         </button>
       </div>
