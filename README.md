@@ -2,6 +2,9 @@
 
 A multi-step form built with **React**, **TypeScript**, **Redux Toolkit**, and **Vite**.
 
+🔗 **GitHub:** [github.com/Mohamed-Hashem/multi-step-form](https://github.com/Mohamed-Hashem/multi-step-form)
+🌐 **Live Demo:** [multi-step-form-signit.vercel.app](https://multi-step-form-signit.vercel.app/)
+
 ---
 
 ## Task Requirements
