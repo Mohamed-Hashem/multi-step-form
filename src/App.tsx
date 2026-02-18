@@ -1,11 +1,7 @@
-import Counter from "./features/counter";
+import Steps from "./features/steps";
 
 function App() {
-  return (
-    <>
-      <Counter />
-    </>
-  );
+  return <Steps />;
 }
 
 export default App;
