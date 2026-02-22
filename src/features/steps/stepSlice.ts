@@ -69,14 +69,18 @@ const stepsSlice = createSlice({
       action: PayloadAction<{ index: number; value: string }>,
     ) => {
       const { index, value } = action.payload;
-      const step = state.steps[index];
+      const step = state.steps.at(index);
+      if (!step) {
+        return;
+      }
       step.value = value;
       const validate = validators[step.type] ?? validators.text;
       step.valid = validate(value);
     },
+    reset: () => initialState,
   },
 });
 
-export const { next, previous, updateValue } = stepsSlice.actions;
+export const { next, previous, updateValue, reset } = stepsSlice.actions;
 
 export default stepsSlice.reducer;

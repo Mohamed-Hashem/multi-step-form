@@ -24,9 +24,15 @@ body {
   align-items: center;
 }
 
+#root {
+  width: 100%;
+  max-width: 1200px;
+  padding: 0 16px;
+}
+
 .app-container {
   width: 100%;
-  max-width: 800px;
+  margin: 0 auto;
   padding: 48px 40px 40px;
   background: #ffffff;
   border: 1px solid #e5e7eb;

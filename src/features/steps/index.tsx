@@ -1,5 +1,5 @@
 import { memo, useCallback } from "react";
-import { next, previous, updateValue } from "./stepSlice";
+import { next, previous, updateValue, reset } from "./stepSlice";
 import type { StepItem } from "./stepSlice";
 import { useAppDispatch, useAppSelector } from "../../hooks/reduxHooks";
 
@@ -63,33 +63,45 @@ export default function Steps() {
   const { currentStep, steps } = useAppSelector((state) => state.Steps);
   const dispatch = useAppDispatch();
 
-  const step = steps[currentStep];
-  const isFirst = currentStep === 0;
-  const isLast = currentStep === steps.length - 1;
+  const safeIndex = Math.max(
+    0,
+    Math.min(Math.floor(currentStep), steps.length - 1),
+  );
+  const step = steps.at(safeIndex);
 
-  // ✅ useCallback — stable dispatch wrappers so memoized children don't re-render
+  const isFirst = safeIndex === 0;
+  const isLast = safeIndex === steps.length - 1;
+
+  // useCallback — stable dispatch wrappers so memoized children don't re-render
   const handleNext = useCallback(() => dispatch(next()), [dispatch]);
   const handlePrevious = useCallback(() => dispatch(previous()), [dispatch]);
   const handleChangeValue = useCallback(
     (value: string) => {
-      dispatch(updateValue({ index: currentStep, value }));
+      dispatch(updateValue({ index: safeIndex, value }));
     },
-    [dispatch, currentStep],
+    [dispatch, safeIndex],
   );
-  const handleSubmit = useCallback(() => alert("Form submitted!"), []);
+  const handleSubmit = useCallback(() => {
+    alert("Form submitted!");
+    dispatch(reset());
+  }, [dispatch]);
+
+  if (!step) {
+    return <p>No steps available.</p>;
+  }
 
   return (
     <main className="app-container" role="main">
       <h1>Multi-Step Form</h1>
 
       <p className="step-indicator">
-        Step {currentStep + 1} of {steps.length}
+        Step {safeIndex + 1} of {steps.length}
       </p>
 
-      <ProgressBar steps={steps} currentStep={currentStep} />
+      <ProgressBar steps={steps} currentStep={safeIndex} />
 
       <StepField
-        key={currentStep}
+        key={safeIndex}
         step={step}
         onChangeValue={handleChangeValue}
       />
