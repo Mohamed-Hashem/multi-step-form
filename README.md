@@ -16,6 +16,7 @@ A multi-step form built with **React**, **TypeScript**, **Redux Toolkit**, and *
 5. Clicking **Next** advances to the next step; clicking **Back** returns to the previous step.
 6. The input is validated based on its `type` (e.g. email format, phone number format).
 7. The user can see the current step and total steps (e.g. "Step 1 of 3").
+8. On the last step, **Submit** resets the form and returns to step 1.
 
 ---
 
@@ -43,13 +44,14 @@ Each step object holds:
 | `name`        | HTML `name` / `id` attribute                       |
 | `valid`       | Whether the current value passes validation        |
 
-**Three reducers:**
+**Four reducers:**
 
 | Action        | What it does                                             |
 | ------------- | -------------------------------------------------------- |
 | `next`        | Increments `currentStep` (clamped to last step)          |
 | `previous`    | Decrements `currentStep` (clamped to first step)         |
 | `updateValue` | Sets the step's `value` and re-validates based on `type` |
+| `reset`       | Resets entire form state to `initialState`               |
 
 **Validation rules** (applied on every keystroke via `updateValue`):
 
@@ -68,13 +70,40 @@ Each step object holds:
 ### UI Component (`features/steps/index.tsx`)
 
 - Reads `currentStep` and `steps` from the Redux store via `useAppSelector`.
+- Uses safe index clamping to prevent out-of-bounds access.
 - Renders the current step's input field with its label and placeholder.
 - A **progress bar** shows completed/active segments.
 - A **step indicator** displays "Step X of 3".
 - **Back** button dispatches `previous()` — disabled when `currentStep === 0`.
 - **Next** button dispatches `next()` — disabled when `step.valid === false`.
-- On the last step, the Next button becomes **Submit**.
+- On the last step, the Next button becomes **Submit** — dispatches `reset()` after submission.
 - Inline validation error appears when the user has typed but the value is invalid.
+
+### Performance Optimizations
+
+- **`React.memo`** on `ProgressBar` and `StepField` to skip unnecessary re-renders.
+- **`useCallback`** on all dispatch wrappers so memoized children receive stable props.
+- **Code splitting** with `React.lazy` — the Steps component is loaded on demand.
+- **`<Suspense>`** with a Loading fallback while the lazy chunk loads.
+- **React Profiler** wraps the app to log mount/update timings in development.
+- **Proper keys** using `step.name` (not array index) for list rendering.
+
+### Accessibility
+
+- `<main role="main">` landmark wrapping the form.
+- `<nav aria-label="Form navigation">` for the button group.
+- `aria-label` on all interactive buttons.
+- `<label htmlFor>` associated with each input.
+- Visually hidden `<h1>` in the Loading fallback for screen readers.
+- `role="status"` on the loading text for live region announcements.
+
+### Dev Tools (development only)
+
+Loaded lazily via dynamic `import()` — zero impact on production bundle:
+
+- **React Scan** — highlights renders in the browser.
+- **Why Did You Render** — logs unnecessary re-renders to console.
+- **@axe-core/react** — runtime accessibility audit in the console.
 
 ### Store (`app/store.ts`)
 
@@ -95,16 +124,39 @@ Typed hooks (`useAppDispatch`, `useAppSelector`) are in `hooks/reduxHooks.ts`.
 ```
 src/
 ├── app/
-│   └── store.ts            # Redux store configuration
+│   └── store.ts                # Redux store configuration
 ├── features/
+│   ├── Loading/
+│   │   ├── index.tsx           # Loading spinner component
+│   │   └── Loading.css         # Loading spinner styles
 │   └── steps/
-│       ├── stepSlice.ts     # Slice: state, reducers, validators
-│       └── index.tsx        # Steps form UI component
+│       ├── stepSlice.ts        # Slice: state, reducers, validators
+│       └── index.tsx           # Steps form UI component
 ├── hooks/
-│   └── reduxHooks.ts       # Typed useDispatch / useSelector
-├── App.tsx                  # Root component (renders <Steps />)
-├── main.tsx                 # Entry point with <Provider>
-└── index.css                # Global styles
+│   └── reduxHooks.ts           # Typed useDispatch / useSelector
+├── App.tsx                     # Root component (Profiler + Suspense + lazy)
+├── main.tsx                    # Entry point with <Provider> and dev tools
+├── wdyr.ts                     # Why Did You Render configuration
+└── index.css                   # Global styles
+```
+
+---
+
+## Linting & Security
+
+ESLint flat config with:
+
+- **typescript-eslint** — TypeScript-aware rules
+- **eslint-plugin-react-hooks** — enforces Rules of Hooks
+- **eslint-plugin-react-refresh** — validates Fast Refresh compatibility
+- **eslint-plugin-jsx-a11y** — accessibility linting for JSX
+- **eslint-plugin-security** — detects common security anti-patterns
+- **eslint-plugin-react-security** — blocks `dangerouslySetInnerHTML`
+
+```bash
+npm run lint     # 0 errors, 0 warnings
+npm audit        # 0 vulnerabilities
+npx knip         # no unused code or dependencies
 ```
 
 ---
@@ -120,6 +172,9 @@ npm run dev
 
 # Build for production
 npm run build
+
+# Lint the codebase
+npm run lint
 ```
 
 ---
@@ -129,3 +184,4 @@ npm run build
 - **React 19** + **TypeScript 5.9**
 - **Redux Toolkit 2** for state management
 - **Vite 7** for development and bundling
+- **ESLint 10** with security + accessibility plugins
