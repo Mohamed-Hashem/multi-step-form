@@ -5,6 +5,13 @@ import App from "./App.tsx";
 import { Provider } from "react-redux";
 import { store } from "./app/store.ts";
 
+if (import.meta.env.DEV) {
+  import("./wdyr");
+  import("react-scan").then(({ scan }) => {
+    scan({ enabled: true });
+  });
+}
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <Provider store={store}>

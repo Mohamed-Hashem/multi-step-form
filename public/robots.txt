@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://multi-step-form-signit.vercel.app/sitemap.xml
