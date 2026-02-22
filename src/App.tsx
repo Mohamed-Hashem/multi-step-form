@@ -1,7 +1,6 @@
 import { Profiler, Suspense, lazy } from "react";
 import Loading from "./features/Loading";
 
-// ✅ Code splitting & lazy loading — Steps is loaded on demand
 const Steps = lazy(() => import("./features/steps"));
 
 function onRenderCallback(
