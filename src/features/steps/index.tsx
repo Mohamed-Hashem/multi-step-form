@@ -64,7 +64,6 @@ export default function Steps() {
   const dispatch = useAppDispatch();
 
   const step = steps[currentStep];
-  // ✅ Trivially cheap — no useMemo needed for simple comparisons
   const isFirst = currentStep === 0;
   const isLast = currentStep === steps.length - 1;
 
@@ -81,7 +80,7 @@ export default function Steps() {
 
   return (
     <main className="app-container" role="main">
-      <h1>Steps Form</h1>
+      <h1>Multi-Step Form</h1>
 
       <p className="step-indicator">
         Step {currentStep + 1} of {steps.length}
